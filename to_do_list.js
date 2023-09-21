@@ -10,12 +10,16 @@ let toastTaskSuccess = document.getElementsByClassName("tasks");
 
 let tasksArray = [];
 
-let checkedTasks = [];
+let checkedTasksArray = [];
+
+let checkedTasks = localStorage.getItem('checkedTasks');
+
+//}
 
 // check if there is checked tasks in localstorage
 // if yes;
-    // get them from localstorage and set checkedTasks.
-    // do a for loop on checkedTasks and check the tasks
+// get them from localstorage and set checkedTasks.
+// do a for loop on checkedTasks and check the tasks
 
 let tasks = localStorage.getItem('tasks');
 
@@ -26,7 +30,7 @@ if (tasks == null) {
     localStorage.setItem('tasks', JSON.stringify(tasksArray));
 }
 
-tasksArray = JSON.parse(tasks)
+tasksArray = JSON.parse(tasks);
 
 for (i = 0; i < tasksArray.length; i++) {
 
@@ -42,6 +46,31 @@ for (i = 0; i < tasksArray.length; i++) {
     myNodelist[i].appendChild(span);
 
 }
+
+checkedTasksArray = JSON.parse(checkedTasks);
+
+tasksArray = JSON.parse(tasks);
+
+//Checking 
+
+
+for (var i = 0; i < tasksArray.length; i++) {
+  var currentItem = tasksArray[i];
+
+  var taskElements = document.getElementsByTagName("LI");
+  
+  
+  if (checkedTasksArray.includes(currentItem) == true) {
+    
+    taskElements[i].classList.add("checked");
+   
+  }
+ 
+}
+
+// Sayfa yüklendiğinde işaretlenmiş görevlere CSS uygulama
+
+
 
 
 // adding "" || "     " character
@@ -61,7 +90,9 @@ function newElement() {
         span.className = "close";
         span.appendChild(txt);
         myNodelist[i].appendChild(span);
-        
+
+        console.log(typeof newTaskDom)
+
         tasksArray.push(newTaskDom.value);
 
         localStorage.setItem('tasks', JSON.stringify(tasksArray))
@@ -73,10 +104,6 @@ function newElement() {
     }
 
 }
-
-// localStorage.getItem(tasksArray);
-
-// existingListItems.innerHTML = tasksArray
 
 newListDom.addEventListener('click', function deleteElement(event) {
     if (event.target.tagName === 'SPAN') {
@@ -105,51 +132,69 @@ isCompleted.addEventListener('click', function (ev) {
     if (ev.target.tagName === 'LI') {
 
         if (ev.target.classList.contains('checked')) {
-            
+
             ev.target.classList.remove('checked');
 
+            let innerLi = ev.target.childNodes[0];
+
+            let innerLiText = ev.target.childNodes[0].nodeValue;
+
+            if (checkedTasksArray.includes(innerLiText) == true) {
+
+                checkedTasksArray = checkedTasksArray.filter(function (item) {
+                    return item !== innerLiText
+                })
+
+                localStorage.setItem('checkedTasks', JSON.stringify(checkedTasksArray));
+
+            }
+
+
+            //checkedTasksArray = checkedTasksArray.filter(function (checkedTasks) {
+            //  return checkedTasksArray !== checkedTasksArrayText
+            //})
+
             //todo: remove from checked tasks if ev.target text is in checked tasks in local storage
-        
+
         } else {
-            
+
             ev.target.classList.add('checked');
 
-            let innerLi = ev.target.childNodes[0]
+            let innerLi = ev.target.childNodes[0];
 
-            console.log(innerLi)
+            let innerLiText = ev.target.childNodes[0].nodeValue;
 
-            localStorage.setItem('checkedTasks', JSON.stringify(checkedTasks));
-        
+            if (checkedTasksArray.includes(innerLiText) == false) {
+
+                checkedTasksArray.push(innerLiText);
+
+            }
+
+            localStorage.setItem('checkedTasks', JSON.stringify(checkedTasksArray));
+
         }
 
-
-        //local
-        //const isLiChecked = ev.target.classList.//contains('checked');
-        //localStorage.setItem('tasks', JSON.stringify//(tasksArray));
-
-        //console.log(isLiChecked);
-
-        popUp();
+        toast();
 
     }
-    
-    
+
+
 }, false);
 
 
 //var isCompleted = document.querySelector('ul');
 //isCompleted.addEventListener('click', function (ev) {
-    //if (ev.target.tagName === 'LI') {
+//if (ev.target.tagName === 'LI') {
 
-        //ev.target.classList.toggle('checked');
+//ev.target.classList.toggle('checked');
 
-        //popUp();
+//popUp();
 
-    //}
-    
+//}
+
 //}, false);
 
-function popUp() {
+function toast() {
 
     let Items = document.getElementsByClassName("checked")
 
